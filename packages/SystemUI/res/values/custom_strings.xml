@@ -83,4 +83,10 @@
     <string name="qs_data_switch_changed_1">Switched data card to SIM 1.</string>
     <string name="qs_data_switch_changed_2">Switched data card to SIM 2.</string>
 
+    <!-- Name of the Internet speed indicator icon. -->
+    <string name="status_bar_network_speed">Internet speed</string>
+
+    <!-- Label for area where tiles can be added to the qs panel -->
+    <string name="drag_or_tap_to_add_tiles">Hold &amp; drag or tap to add tiles</string>
+
 </resources>

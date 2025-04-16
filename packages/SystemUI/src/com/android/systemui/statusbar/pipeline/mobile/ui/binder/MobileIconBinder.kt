@@ -42,6 +42,7 @@ import com.android.systemui.statusbar.core.NewStatusBarIcons
 import com.android.systemui.statusbar.pipeline.mobile.domain.model.SignalIconModel
 import com.android.systemui.statusbar.pipeline.mobile.ui.MobileViewLogger
 import com.android.systemui.statusbar.pipeline.mobile.ui.viewmodel.LocationBasedMobileViewModel
+import com.android.systemui.statusbar.pipeline.netspeed.ui.binder.NetworkSpeedViewBinder
 import com.android.systemui.statusbar.pipeline.shared.ui.binder.ModernStatusBarViewBinding
 import com.android.systemui.statusbar.pipeline.shared.ui.binder.ModernStatusBarViewVisibilityHelper
 import com.android.systemui.statusbar.pipeline.shared.ui.binder.StatusBarViewBinderConstants.ALPHA_ACTIVE
@@ -50,6 +51,7 @@ import com.android.systemui.util.kotlin.pairwiseBy
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 data class MobileIconColors(@ColorInt val tint: Int, @ColorInt val contrast: Int)
 
@@ -74,6 +76,7 @@ object MobileIconBinder {
         val roamingSpace = view.requireViewById<Space>(R.id.mobile_roaming_space)
         val endSideRoamingView = view.requireViewById<ImageView>(R.id.mobile_roaming_updated)
         val dotView = view.requireViewById<StatusBarIconView>(R.id.status_bar_dot)
+        val networkSpeedView = view.requireViewById<ViewGroup>(R.id.network_speed)
 
         view.isVisible = viewModel.isVisible.value
         iconView.isVisible = true
@@ -287,6 +290,12 @@ object MobileIconBinder {
                 }
             }
         }
+
+        NetworkSpeedViewBinder.bind(
+            view = networkSpeedView,
+            icon = viewModel.networkSpeedIcon,
+            iconTint = iconTint.map { it.tint }
+        )
 
         return object : ModernStatusBarViewBinding {
             override fun getShouldIconBeVisible(): Boolean {
