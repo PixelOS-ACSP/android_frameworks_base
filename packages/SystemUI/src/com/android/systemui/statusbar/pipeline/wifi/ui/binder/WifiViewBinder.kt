@@ -32,6 +32,7 @@ import com.android.systemui.statusbar.StatusBarIconView
 import com.android.systemui.statusbar.StatusBarIconView.STATE_HIDDEN
 import com.android.systemui.statusbar.core.NewStatusBarIcons
 import com.android.systemui.statusbar.pipeline.netspeed.ui.binder.NetworkSpeedViewBinder
+import com.android.systemui.statusbar.pipeline.netspeed.ui.model.NetworkSpeedIcon
 import com.android.systemui.statusbar.pipeline.shared.ui.binder.ModernStatusBarViewBinding
 import com.android.systemui.statusbar.pipeline.shared.ui.binder.ModernStatusBarViewVisibilityHelper
 import com.android.systemui.statusbar.pipeline.shared.ui.binder.StatusBarViewBinderConstants.ALPHA_ACTIVE
@@ -66,6 +67,7 @@ object WifiViewBinder {
         val airplaneSpacer = view.requireViewById<View>(R.id.wifi_airplane_spacer)
         val signalSpacer = view.requireViewById<View>(R.id.wifi_signal_spacer)
         val networkSpeedView = view.requireViewById<ViewGroup>(R.id.network_speed)
+        val networkSpeedSpacer = view.requireViewById<View>(R.id.network_speed_spacer)
 
         view.isVisible = true
         iconView.isVisible = true
@@ -172,6 +174,12 @@ object WifiViewBinder {
                         viewModel.isSignalSpacerVisible.distinctUntilChanged().collect { visible ->
                             signalSpacer.isVisible = visible
                         }
+                    }
+                }
+
+                launch {
+                    viewModel.networkSpeedIcon.collect { networkSpeedIcon ->
+                        networkSpeedSpacer.isVisible = networkSpeedIcon is NetworkSpeedIcon.Enabled
                     }
                 }
 
