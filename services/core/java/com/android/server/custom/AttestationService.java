@@ -9,6 +9,7 @@ package com.android.server.custom;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageInfo;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -17,7 +18,6 @@ import android.provider.Settings;
 import android.util.Log;
 
 import com.android.server.SystemService;
-import com.android.internal.util.custom.NeotericUtils;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -28,6 +28,8 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import android.content.pm.PackageManager.NameNotFoundException;
 
 public final class AttestationService extends SystemService {
 
@@ -53,7 +55,7 @@ public final class AttestationService extends SystemService {
 
     @Override
     public void onBootPhase(int phase) {
-        if (NeotericUtils.isPackageInstalled(mContext, "com.google.android.gms")
+        if (isPackageInstalled(mContext, "com.google.android.gms")
                 && phase == PHASE_BOOT_COMPLETED) {
             Log.i(TAG, "Scheduling the service");
             mScheduler.scheduleAtFixedRate(
@@ -132,5 +134,25 @@ public final class AttestationService extends SystemService {
                 Log.e(TAG, "Error in FetchGmsCertifiedProps", e);
             }
         }
+    }
+
+    // Check to see if a package is installed
+    private static boolean isPackageInstalled(Context context, String pkg, boolean ignoreState) {
+        if (pkg != null) {
+            try {
+                PackageInfo pi = context.getPackageManager().getPackageInfo(pkg, 0);
+                if (!pi.applicationInfo.enabled && !ignoreState) {
+                    return false;
+                }
+            } catch (NameNotFoundException e) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean isPackageInstalled(Context context, String pkg) {
+        return isPackageInstalled(context, pkg, true);
     }
 }
